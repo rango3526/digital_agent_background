@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".LearnMoreActivity">
+
+    <TextView
+        android:id="@+id/videoDialogueBubble"
+        android:layout_width="265dp"
+        android:layout_height="101dp"
+        android:background="@drawable/speech_bubble_background"
+        android:backgroundTint="#00BCD4"
+        android:padding="10dp"
+        android:paddingStart="20dp"
+        android:text="Interested in learning more? Let's watch a video together, or bookmark it for later."
+        android:textColor="#000000"
+        app:layout_constraintEnd_toEndOf="@+id/descriptionBubble"
+        app:layout_constraintStart_toStartOf="@+id/descriptionBubble"
+        app:layout_constraintTop_toBottomOf="@+id/descriptionBubble" />
+
+    <TextView
+        android:id="@+id/descriptionBubble"
+        android:layout_width="264dp"
+        android:layout_height="196dp"
+        android:background="@drawable/speech_bubble_background"
+        android:backgroundTint="#00BCD4"
+        android:padding="10dp"
+        android:paddingStart="20dp"
+        android:text="In ancient times, people used obsidian stones to make mirrors. At this point, mirrors were still only affordable for the rich, but scientists had noticed some alternative uses for them in the meantime."
+        android:textColor="#000000"
+        app:layout_constraintEnd_toEndOf="@+id/topicBubble"
+        app:layout_constraintStart_toStartOf="@+id/topicBubble"
+        app:layout_constraintTop_toBottomOf="@+id/topicBubble" />
+
+    <TextView
+        android:id="@+id/topicBubble"
+        android:layout_width="265dp"
+        android:layout_height="101dp"
+        android:layout_marginTop="84dp"
+        android:background="@drawable/speech_bubble_background"
+        android:backgroundTint="#00BCD4"
+        android:padding="10dp"
+        android:paddingStart="20dp"
+        android:text="Let's learn together about XYZ principle."
+        android:textColor="#000000"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="52dp"
+        android:layout_height="57dp"
+        app:layout_constraintBottom_toBottomOf="@+id/videoDialogueBubble"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.013"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/videoDialogueBubble"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/emma" />
+
+    <TextView
+        android:id="@+id/titleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Stove - Induction"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.035" />
+
+    <Button
+        android:id="@+id/watchVideoButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="56dp"
+        android:layout_marginTop="12dp"
+        android:backgroundTint="#3F51B5"
+        android:fontFamily="sans-serif-medium"
+        android:text="Watch video"
+        android:textAllCaps="false"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/videoDialogueBubble" />
+
+    <Button
+        android:id="@+id/bookmarkLessonButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:backgroundTint="#ECECEC"
+        android:text="Bookmark lesson"
+        android:textAllCaps="false"
+        android:textColor="#3F51B5"
+        app:layout_constraintStart_toEndOf="@+id/watchVideoButton"
+        app:layout_constraintTop_toTopOf="@+id/watchVideoButton" />
+</androidx.constraintlayout.widget.ConstraintLayout>

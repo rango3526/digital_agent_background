@@ -18,13 +18,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
+//
+// Right now this is just a refactored copy of LessonListRecyclerViewAdapter with no other changes
+//
+
+public class AvatarRecyclerViewAdapter extends RecyclerView.Adapter<AvatarRecyclerViewAdapter.ViewHolder> {
 
     ArrayList<String> objectNames = new ArrayList<>();
     ArrayList<String> imagesUriStrings = new ArrayList<>();
     Context context;
 
-    public RecyclerViewAdapter(ArrayList<String> objectNames, ArrayList<String> imagesUriStrings, Context context) {
+    public AvatarRecyclerViewAdapter(ArrayList<String> objectNames, ArrayList<String> imagesUriStrings, Context context) {
         this.objectNames = objectNames;
         this.imagesUriStrings = imagesUriStrings;
         this.context = context;
@@ -40,7 +44,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
-    public void onBindViewHolder(@NonNull RecyclerViewAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull AvatarRecyclerViewAdapter.ViewHolder holder, int position) {
         Log.w("Stuff", "onBindViewHolder called");
 
         Log.w("Stuff", "Before uri string: " + String.join(", ", imagesUriStrings));
@@ -55,7 +59,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             @Override
             public void onClick(View v) {
                 Log.w("Stuff", "onClick, clicked on " + objectNames.get(position));
-                Intent intent = HelperCode.getIntentForObjectLesson(context, objectNames.get(position));
+                Intent intent = HelperCode.getIntentForObjectLesson(context, objectNames.get(position), Uri.parse(uriString));
                 context.startActivity(intent);
             }
         });

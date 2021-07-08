@@ -56,11 +56,16 @@ public class HelperCode {
         return arrayList;
     }
 
-    public static Intent getIntentForObjectLesson(Context context, String objectFound) {
+    public static Intent getIntentForObjectLesson(Context context, String objectFound, Uri imageUri) {
         Intent intent = new Intent(context, LessonActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.putExtra("objectFound", objectFound);
+        intent.putExtra("imageUri", imageUri.toString());
 
         return intent;
+    }
+
+    public static String capitalizeFirstLetter(String text) {
+        return text.substring(0, 1).toUpperCase() + text.substring(1);
     }
 }

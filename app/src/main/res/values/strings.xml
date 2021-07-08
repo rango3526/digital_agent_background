@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Digital_Agent_Background</string>
+    <string name="closeNavDrawer">Navigation Drawer Open</string>
+    <string name="openNavDrawer">Navigation Drawer Close</string>
 </resources>

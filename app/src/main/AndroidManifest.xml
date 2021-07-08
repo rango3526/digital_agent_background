@@ -11,7 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Digital_Agent_Background">
-        <activity android:name=".LessonListActivity"></activity>
+        <activity android:name=".LearnMoreActivity"></activity>
+        <activity android:name=".LessonListActivity" />
         <activity android:name=".LessonActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>

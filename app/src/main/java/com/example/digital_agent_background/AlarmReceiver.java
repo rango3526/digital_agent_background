@@ -52,8 +52,8 @@ public class AlarmReceiver extends BroadcastReceiver {
         }
     }
 
-    private static void sendNotification(Context context, String objectFound) {
-        Intent intent = HelperCode.getIntentForObjectLesson(context, objectFound);
+    private static void sendNotification(Context context, String objectFound, Uri imageUri) {
+        Intent intent = HelperCode.getIntentForObjectLesson(context, objectFound, imageUri);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, GlobalVars.NOTIF_CHANNEL_ID)
@@ -144,7 +144,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         for (MyImage mi : images) {
             Log.w("Stuff", "Analyzing new image: " + mi.name + " at " + mi.uriString);
             String result = MachineLearningManager.AnalyzeImage(context, Uri.parse(mi.uriString));
-            sendNotification(context, result);
+            sendNotification(context, result, Uri.parse(mi.uriString));
             mi.objectDetected = result;
             LessonListActivity.addMyImage(context, mi);
         }

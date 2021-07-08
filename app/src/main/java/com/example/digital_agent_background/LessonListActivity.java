@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -62,7 +61,7 @@ public class LessonListActivity extends AppCompatActivity {
 
     void initRecyclerView(Context context) {
         Log.w("Stuff", "initRecyclerView; count: " + imageUriStrings.size());
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter(objectNames, imageUriStrings, context);
+        LessonListRecyclerViewAdapter adapter = new LessonListRecyclerViewAdapter(objectNames, imageUriStrings, context);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
     }

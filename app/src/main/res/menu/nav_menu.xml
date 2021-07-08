@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:title="Bookmarked lessons"
+        android:icon="@drawable/bookmark_empty"/>
+    <item android:title="Completed lessons"
+        android:icon="@drawable/checkmark"/>
+    <item android:title="Choose view">
+        <menu>
+            <item android:title="Living Room"/>
+            <item android:title="Bedroom"/>
+            <item android:title="Kitchen"/>
+        </menu>
+    </item>
+</menu>
