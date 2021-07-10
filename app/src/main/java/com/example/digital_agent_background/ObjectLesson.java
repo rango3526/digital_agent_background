@@ -2,6 +2,9 @@ package com.example.digital_agent_background;
 
 import android.util.Log;
 
+import java.util.HashMap;
+
+
 import androidx.annotation.NonNull;
 
 import java.util.HashMap;
@@ -15,9 +18,12 @@ public class ObjectLesson {
 
     private HashMap<String, String> hashmapRepresentation;
 
+    public enum hashmapKeys {objectID, objectDisplayName, definition, lessonTopic, videoLink};
+
     public HashMap<String, String> getHashmapRepresentation() {
         if (hashmapRepresentation == null) {
-            throw new RuntimeException("CUSTOM EXCEPTION: Hashmap was null");
+            //throw new RuntimeException("CUSTOM EXCEPTION: Hashmap was null");
+            Log.w("Firebase stuff", "Hashmap was null; internet connection probably bad");
         }
         return hashmapRepresentation;
     }
@@ -69,7 +75,6 @@ public class ObjectLesson {
 
 
 
-    public enum hashmapKeys {objectID, objectDisplayName, definition, lessonTopic, videoLink};
 
     public ObjectLesson() {
 

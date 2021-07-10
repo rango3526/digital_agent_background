@@ -100,15 +100,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/videoDialogueBubble" />
 
-    <Button
-        android:id="@+id/bookmarkLessonButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:backgroundTint="#ECECEC"
-        android:text="Bookmark lesson"
-        android:textAllCaps="false"
-        android:textColor="#3F51B5"
+    <ToggleButton
+        android:id="@+id/bookmarkToggle"
+        style="@style/toggleButton"
+        android:layout_width="53dp"
+        android:layout_height="49dp"
+        android:background="@drawable/bookmark_toggle_bg"
+        android:backgroundTint="#FFC107"
+        app:layout_constraintBottom_toBottomOf="@+id/watchVideoButton"
+        app:layout_constraintEnd_toEndOf="@+id/topicBubble"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/watchVideoButton"
-        app:layout_constraintTop_toTopOf="@+id/watchVideoButton" />
+        app:layout_constraintTop_toTopOf="@+id/watchVideoButton"
+        app:layout_constraintVertical_bias="0.0" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

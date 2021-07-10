@@ -57,14 +57,14 @@ public class AlarmReceiver extends BroadcastReceiver {
         }
     }
 
-    private static void sendNotification(Context context, String objectFound, Uri imageUri) {
-        Intent intent = HelperCode.getIntentForObjectLesson(context, objectFound, imageUri);
+    private static void sendNotification(Context context, MyImage mi) {
+        Intent intent = HelperCode.getIntentForObjectLesson(context, mi);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, GlobalVars.NOTIF_CHANNEL_ID)
                 .setSmallIcon(R.drawable.default_small_icon)
                 .setContentTitle("Interesting object found!")
-                .setContentText("You took a photo of a(n) " + objectFound)
+                .setContentText("You took a photo of a(n) " + mi.objectDetected)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true);
@@ -100,7 +100,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         String[] selectionArgs = new String[] {
             //String.valueOf(TimeUnit.MILLISECONDS.convert(5, TimeUnit.MINUTES))
         };
-        String sortOrder = MediaStore.Images.Media.DATE_ADDED + " ASC";
+        String sortOrder = MediaStore.Images.Media.DATE_ADDED + " DESC";
 
         long startTime = SystemClock.elapsedRealtime();
         try (Cursor cursor = context.getContentResolver().query(
@@ -131,7 +131,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
                 // Stores column values and the contentUri in a local object
                 // that represents the media file.
-                imageList.add(new MyImage(contentUri, name, size, dateTaken, ""));
+                imageList.add(new MyImage(contentUri, name, size, dateTaken, "", id));
 //                Log.w("MyImage Stuff", contentUri.toString() + " " + name + " " + size + " " + dateTaken);
             }
         }
@@ -150,9 +150,9 @@ public class AlarmReceiver extends BroadcastReceiver {
             Log.w("Stuff", "Analyzing new image: " + mi.name + " at " + mi.uriString);
             String result = MachineLearningManager.AnalyzeImage(context, Uri.parse(mi.uriString));
             if (FirebaseManager.firestoreObjectNameExists(result)) {
-                sendNotification(context, result, Uri.parse(mi.uriString));
                 mi.objectDetected = result;
                 LessonListActivity.addMyImage(context, mi);
+                sendNotification(context, mi);
             }
         }
     }
@@ -161,7 +161,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         int latestDate = 0;
 
         createNotificationChannel(context);
-        Toast.makeText(context, "Checking for new photos...", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(context, "Checking for new photos...", Toast.LENGTH_SHORT).show();
 
         List<MyImage> updatedImages = getAllImages(context);
         List<MyImage> newlyTaken = new ArrayList<>();

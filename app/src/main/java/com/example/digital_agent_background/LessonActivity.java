@@ -8,8 +8,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.digital_agent_background.databinding.ActivityLessonBinding;
 import com.example.digital_agent_background.databinding.ActivityMainBinding;
@@ -29,12 +31,15 @@ public class LessonActivity extends AppCompatActivity {
         Intent prevIntent = getIntent();
         String objectFound = prevIntent.getStringExtra("objectFound");
         Uri imageUri = Uri.parse(prevIntent.getStringExtra("imageUri"));
+        Long myImageID = prevIntent.getLongExtra("myImageID", -1);
+        MyImage mi = LessonListActivity.getMyImageByID(context, myImageID);
 
         TextView textView = binding.avatarBeginLessonDialogue;
         ImageView image = binding.objectImage;
         image.setImageURI(imageUri);
         textView.setText("Let's learn about that " + objectFound + "!");
         Log.w("Stuff", "STARTED LESSON LEARN ACTIVITY");
+        binding.bookmarkToggle.setChecked(mi.bookmarked);
 
         binding.backToMainButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,10 +52,23 @@ public class LessonActivity extends AppCompatActivity {
         binding.learnMoreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, LearnMoreActivity.class);
                 ObjectLesson ol = FirebaseManager.getFirestoreObjectData(objectFound);
+                if (ol == null) {
+                    Toast.makeText(context, "Check your internet connection and try again (restart app)", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                Intent intent = new Intent(context, LearnMoreActivity.class);
                 intent.putExtra("objectLessonHashmap", ol.getHashmapRepresentation());
+                intent.putExtra("myImageID", myImageID);
                 startActivity(intent);
+            }
+        });
+
+        binding.bookmarkToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                LessonListActivity.setImageBookmark(context, myImageID, isChecked);
             }
         });
     }

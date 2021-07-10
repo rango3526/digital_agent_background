@@ -9,8 +9,10 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -37,8 +39,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     ActivityMainBinding binding;
-    PendingIntent pendingIntent;
-    AlarmManager alarmManager;
 
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
@@ -101,18 +101,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-//        binding.stopAnalyzing.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (pendingIntent != null)
-//                    alarmManager.cancel(pendingIntent);
-//            }
-//        });
-
         binding.forgetLessons.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 LessonListActivity.clearImageHistory(context);
+            }
+        });
+
+        binding.stopAnalyzing.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                HelperCode.cancelAlarm(context);
             }
         });
 
@@ -144,8 +143,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         // Begin searching for photos
-        initializeAlarmManager();
-        setTestAlarm();
+        HelperCode.initializeAlarmManager(context);
+        HelperCode.setTestAlarm(context);
     }
 
     @Override
@@ -157,6 +156,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         else if (item.getTitle().equals(getString(R.string.bookmarked_lessons))) {
             Intent intent = new Intent(context, LessonListActivity.class);
+            intent.putExtra("onlyBookmarks", true);
             startActivity(intent);
 //            drawerLayout.closeDrawer(0);
         }
@@ -167,18 +167,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
 
-    }
-
-    private void initializeAlarmManager() {
-        Intent intent = new Intent(this, AlarmReceiver.class);
-        pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-        alarmManager = (AlarmManager) this.getSystemService(ALARM_SERVICE);
-    }
-
-    private void setTestAlarm() {
-        AlarmReceiver.alarmTriggered(context);
-        alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 5000, 5000, pendingIntent);
-        Toast.makeText(this,"I will let you know when I find something interesting!", Toast.LENGTH_SHORT).show();
     }
 
     private void askForExternalStoragePermission() {

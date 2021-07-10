@@ -155,8 +155,14 @@ public class FirebaseManager {
     }
 
     public static ObjectLesson getFirestoreObjectData(String objectName) {
-        HashMap<String, String> objectLessonHM = objectLessons.get(objectName);
-        ObjectLesson ol = new ObjectLesson(objectLessonHM);
-        return ol;
+        try {
+            HashMap<String, String> objectLessonHM = objectLessons.get(objectName);
+            ObjectLesson ol = new ObjectLesson(objectLessonHM);
+            return ol;
+        }
+        catch (Exception e) {
+            Log.w("Firebase stuff", "Hashmap null, internet probably bad");
+            return null;
+        }
     }
 }

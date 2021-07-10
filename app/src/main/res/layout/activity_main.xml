@@ -54,14 +54,6 @@
 <!--                android:text="Begin analyzing new photos"-->
 <!--                android:visibility="gone" />-->
 
-<!--            <Button-->
-<!--                android:id="@+id/stopAnalyzing"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_gravity="center"-->
-<!--                android:backgroundTint="@color/deep_blue"-->
-<!--                android:text="Stop analyzing"-->
-<!--                tools:visibility="gone" />-->
 
             <Button
                 android:id="@+id/forgetLessons"
@@ -79,6 +71,13 @@
                 android:backgroundTint="@color/deep_blue"
                 android:text="Change avatar" />
 
+            <Button
+                android:id="@+id/stopAnalyzing"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:backgroundTint="@color/deep_blue"
+                android:text="Stop Refreshing in Background" />
 
         </com.google.android.material.appbar.AppBarLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

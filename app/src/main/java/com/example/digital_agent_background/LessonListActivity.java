@@ -10,8 +10,11 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.CompoundButton;
 
 import com.example.digital_agent_background.databinding.ActivityLessonListBinding;
+
+import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
 
@@ -23,8 +26,12 @@ public class LessonListActivity extends AppCompatActivity {
     static SharedPreferences sharedPreferences;
     Context context = this;
 
-    ArrayList<String> objectNames = new ArrayList<>();
-    ArrayList<String> imageUriStrings = new ArrayList<>();
+    boolean onlyBookmarks = false;
+
+//    ArrayList<String> objectNames = new ArrayList<>();
+//    ArrayList<String> imageUriStrings = new ArrayList<>();
+
+    ArrayList<MyImage> myImages = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,11 +39,12 @@ public class LessonListActivity extends AppCompatActivity {
         binding = ActivityLessonListBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        Log.w("Stuff", "Started list activity with length: " + getImageHistory(context).size());
+        Intent prevIntent = getIntent();
+        onlyBookmarks = prevIntent.getBooleanExtra("onlyBookmarks", false);
+        binding.bookmarkSwitch.setChecked(onlyBookmarks);
 
         recyclerView = binding.imageRecyclerView;
-        initArrayList(context);
-        initRecyclerView(context);
+        initRecyclerView(context, onlyBookmarks);
 
         binding.backToMainButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,26 +54,44 @@ public class LessonListActivity extends AppCompatActivity {
             }
         });
 
+        binding.bookmarkSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                switchBookmarkFilter(context, isChecked);
+            }
+        });
+
         FirebaseManager.updateFirestoreObjectLessons();
     }
 
-    void initArrayList(Context context) {
-        objectNames.clear();
-        imageUriStrings.clear();
+    void initArrayList(Context context, boolean onlyBookmarks) {
+//        objectNames.clear();
+//        imageUriStrings.clear();
+
+        myImages.clear();
 
         ArrayList<MyImage> entireHistory = getImageHistory(context);
 
         for (MyImage mi : entireHistory) {
-            objectNames.add(mi.objectDetected);
-            imageUriStrings.add(mi.uriString);
+            if (!onlyBookmarks || mi.bookmarked) {
+//                objectNames.add(mi.objectDetected);
+//                imageUriStrings.add(mi.uriString);
+                myImages.add(mi);
+            }
         }
     }
 
-    void initRecyclerView(Context context) {
-        Log.w("Stuff", "initRecyclerView; count: " + imageUriStrings.size());
-        LessonListRecyclerViewAdapter adapter = new LessonListRecyclerViewAdapter(objectNames, imageUriStrings, context);
+    public void switchBookmarkFilter(Context context, boolean onlyBookmarks) {
+        initRecyclerView(context, onlyBookmarks);
+    }
+
+    void initRecyclerView(Context context, boolean onlyBookmarks) {
+        initArrayList(context, onlyBookmarks);
+        Log.w("Stuff", "initRecyclerView; count: " + myImages.size());
+        LessonListRecyclerViewAdapter adapter = new LessonListRecyclerViewAdapter(myImages, context);
+        LinearLayoutManager llm = new LinearLayoutManager(context);
         recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        recyclerView.setLayoutManager(llm);
     }
 
     public static void addMyImage(Context context, MyImage mi) {
@@ -76,6 +102,22 @@ public class LessonListActivity extends AppCompatActivity {
         ArrayList<MyImage> entireHistory = getImageHistory(context);
 //        ArrayList<MyImage> entireHistory = new ArrayList<>();
         entireHistory.add(mi);
+
+        sharedPreferences.edit().putString(GlobalVars.IMAGE_HISTORY_PREF_KEY, HelperCode.arrayListToJson(entireHistory)).apply();
+    }
+
+    public static void setImageBookmark(Context context, long imageID, boolean bookmarked) {
+        if (sharedPreferences == null) {
+            sharedPreferences = HelperCode.getSharedPrefsObj(context);
+        }
+
+        ArrayList<MyImage> entireHistory = getImageHistory(context);
+        for (MyImage mi : entireHistory) {
+            if (mi.imageID == imageID) {
+                mi.bookmarked = bookmarked;
+                break;
+            }
+        }
 
         sharedPreferences.edit().putString(GlobalVars.IMAGE_HISTORY_PREF_KEY, HelperCode.arrayListToJson(entireHistory)).apply();
     }
@@ -94,5 +136,21 @@ public class LessonListActivity extends AppCompatActivity {
         }
 
         sharedPreferences.edit().remove(GlobalVars.IMAGE_HISTORY_PREF_KEY).apply();
+    }
+
+    public static MyImage getMyImageByID(Context context, long imageID) {
+        if (sharedPreferences == null) {
+            sharedPreferences = HelperCode.getSharedPrefsObj(context);
+        }
+
+        ArrayList<MyImage> entireHistory = getImageHistory(context);
+        for (MyImage mi : entireHistory) {
+            if (mi.imageID == imageID) {
+                return mi;
+            }
+        }
+
+        Log.e("Stuff", "That imageID was not found");
+        throw new RuntimeException("imageID not found");
     }
 }

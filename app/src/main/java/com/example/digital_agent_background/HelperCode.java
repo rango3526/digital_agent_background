@@ -1,12 +1,19 @@
 package com.example.digital_agent_background;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.SystemClock;
 import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -16,7 +23,12 @@ import java.util.ArrayList;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.checkerframework.checker.units.qual.A;
+
 public class HelperCode {
+    public static PendingIntent alarmPendingIntent;
+    public static AlarmManager alarmManager;
+
     public static Bitmap GetBitmapFromUri(Context context, Uri imageUri) {
         Bitmap bitmap = null;
         try {
@@ -44,6 +56,17 @@ public class HelperCode {
         return json;
     }
 
+    public static ArrayList<MyImage> reverseMyImageList(ArrayList<MyImage> al) {
+        ArrayList<MyImage> reversedList = new ArrayList<>();
+        int size = al.size();
+
+        for (int i = 0; i < size; i++) {
+            reversedList.add(al.get(size-i-1));
+        }
+
+        return reversedList;
+    }
+
     public static ArrayList<MyImage> jsonToMyImageArrayList(String json) {
         Gson gson = new Gson();
         Type type = new TypeToken<ArrayList<MyImage>>() {}.getType();
@@ -56,16 +79,51 @@ public class HelperCode {
         return arrayList;
     }
 
-    public static Intent getIntentForObjectLesson(Context context, String objectFound, Uri imageUri) {
+    public static Intent getIntentForObjectLesson(Context context, MyImage mi) {
         Intent intent = new Intent(context, LessonActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        intent.putExtra("objectFound", objectFound);
-        intent.putExtra("imageUri", imageUri.toString());
+        intent.putExtra("objectFound", mi.objectDetected);
+        intent.putExtra("imageUri", mi.uriString);
+        intent.putExtra("myImageID", mi.imageID);
 
         return intent;
     }
 
     public static String capitalizeFirstLetter(String text) {
         return text.substring(0, 1).toUpperCase() + text.substring(1);
+    }
+
+    public static void initializeAlarmManager(Context context) {
+        Intent intent = new Intent(context, AlarmReceiver.class);
+        alarmPendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+        alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+    }
+
+    public static void setTestAlarm(Context context) {
+        AlarmReceiver.alarmTriggered(context);
+        alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 5000, 5000, alarmPendingIntent);
+        Toast.makeText(context,"I'll analyze your photos periodically in the background", Toast.LENGTH_SHORT).show();
+
+        ComponentName receiver = new ComponentName(context, AlarmBootReceiver.class);
+        PackageManager pm = context.getPackageManager();
+
+        pm.setComponentEnabledSetting(receiver,
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                PackageManager.DONT_KILL_APP);
+    }
+
+    public static void cancelAlarm(Context context) {
+        if (alarmPendingIntent != null) {
+            alarmManager.cancel(alarmPendingIntent);
+
+            ComponentName receiver = new ComponentName(context, AlarmBootReceiver.class);
+            PackageManager pm = context.getPackageManager();
+
+            pm.setComponentEnabledSetting(receiver,
+                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                    PackageManager.DONT_KILL_APP);
+
+            Toast.makeText(context,"Background refresh stopped", Toast.LENGTH_SHORT).show();
+        }
     }
 }
