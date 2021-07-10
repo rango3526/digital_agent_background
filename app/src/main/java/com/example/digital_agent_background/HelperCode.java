@@ -39,7 +39,7 @@ public class HelperCode {
         Gson gson = new Gson();
         String json = gson.toJson(arrayList);
 
-        Log.w("Stuff", "Json is: " + json);
+//        Log.w("Stuff", "Json is: " + json);
 
         return json;
     }

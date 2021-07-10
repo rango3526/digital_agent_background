@@ -2,4 +2,6 @@
     <string name="app_name">Digital_Agent_Background</string>
     <string name="closeNavDrawer">Navigation Drawer Open</string>
     <string name="openNavDrawer">Navigation Drawer Close</string>
+    <string name="completed_lessons">Completed lessons</string>
+    <string name="bookmarked_lessons">Bookmarked lessons</string>
 </resources>

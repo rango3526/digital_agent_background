@@ -45,6 +45,8 @@ public class LessonListActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        FirebaseManager.updateFirestoreObjectLessons();
     }
 
     void initArrayList(Context context) {
@@ -84,5 +86,13 @@ public class LessonListActivity extends AppCompatActivity {
         }
 
         return HelperCode.jsonToMyImageArrayList(sharedPreferences.getString(GlobalVars.IMAGE_HISTORY_PREF_KEY, HelperCode.arrayListToJson(new ArrayList<MyImage>())));
+    }
+
+    public static void clearImageHistory(Context context) {
+        if (sharedPreferences == null) {
+            sharedPreferences = HelperCode.getSharedPrefsObj(context);
+        }
+
+        sharedPreferences.edit().remove(GlobalVars.IMAGE_HISTORY_PREF_KEY).apply();
     }
 }

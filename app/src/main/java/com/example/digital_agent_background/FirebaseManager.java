@@ -3,33 +3,48 @@ package com.example.digital_agent_background;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 
 public class FirebaseManager {
-    static FirebaseManager instance;
+    static boolean initialized = false;
     static FirebaseStorage storage;
     static StorageReference storageReference;
+    static FirebaseFirestore firestoreReference;
 
-    public FirebaseManager() {
+    static HashMap<String, HashMap<String, String>> objectLessons = new HashMap<>();
+
+
+    public static void initFirebaseManager() {
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
-        instance = this;
+        firestoreReference = FirebaseFirestore.getInstance();
     }
 
-    private void uploadImage(Uri filePath, Context context, String name)
+    private static void uploadImage(Uri filePath, Context context, String name)
     {
-        if (instance == null)
-            new FirebaseManager();
+        if (!initialized)
+            initFirebaseManager();
 
         if (filePath != null) {
 
@@ -101,5 +116,47 @@ public class FirebaseManager {
                                 }
                             });
         }
+    }
+
+    public static void updateFirestoreObjectLessons() {
+        if (!initialized)
+            initFirebaseManager();
+
+        Log.w("Stuff", "Updating Firestore objectLessons...");
+
+        firestoreReference.collection("objectLessons").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        Log.d("FirestoreResult", document.getId() + " => " + document.getData());
+                        //String[] values = {"objectDisplayName", "definition", "lessonTopic", "videoLink"};
+                        objectLessons.put(document.getId(), new HashMap<String, String>());
+                        for (ObjectLesson.hashmapKeys enumVal : ObjectLesson.hashmapKeys.values()) {
+                            if (enumVal == ObjectLesson.hashmapKeys.objectID) {
+                                objectLessons.get(document.getId()).put(enumVal.name(), (String) document.getId());
+                                continue;
+                            }
+                            Log.w("Firebase val", enumVal + ": " + (String) document.getData().get(enumVal.name()));
+                            objectLessons.get(document.getId()).put(enumVal.name(), (String) document.getData().get(enumVal.name()));
+                        }
+                    }
+                } else {
+                    Log.w("Stuff", "Error getting documents.", task.getException());
+                }
+            }
+        });
+
+        Log.w("Stuff", "After update Firestore objectLessons");
+    }
+
+    public static boolean firestoreObjectNameExists(String objectName) {
+        return objectLessons.containsKey(objectName);
+    }
+
+    public static ObjectLesson getFirestoreObjectData(String objectName) {
+        HashMap<String, String> objectLessonHM = objectLessons.get(objectName);
+        ObjectLesson ol = new ObjectLesson(objectLessonHM);
+        return ol;
     }
 }

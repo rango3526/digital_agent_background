@@ -48,10 +48,8 @@ public class LessonActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, LearnMoreActivity.class);
-                intent.putExtra("objectName", objectFound);
-                intent.putExtra("lessonTopic", "Induction");
-                intent.putExtra("objectDescription", "[Random description] In many ways, our memories make us who we are, helping us remember our past, learn and retain skills, and plan for the future. And for the computers that often act as extensions of ourselves, memory plays much the same role.");
-                intent.putExtra("videoLink", "www.youtube.com");
+                ObjectLesson ol = FirebaseManager.getFirestoreObjectData(objectFound);
+                intent.putExtra("objectLessonHashmap", ol.getHashmapRepresentation());
                 startActivity(intent);
             }
         });

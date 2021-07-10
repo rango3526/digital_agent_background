@@ -32,7 +32,12 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        alarmTriggered(context);
+        try {
+            alarmTriggered(context);
+        }
+        catch (Exception e) {
+            Log.w("Stuff", "Found exception: " + e.getMessage());
+        }
     }
 
     // Setting up notification channel for whole app
@@ -88,14 +93,14 @@ public class AlarmReceiver extends BroadcastReceiver {
                 MediaStore.Images.Media._ID,
                 MediaStore.Images.Media.DISPLAY_NAME,
                 MediaStore.Images.Media.SIZE,
-                MediaStore.Images.Media.DATE_TAKEN
+                MediaStore.Images.Media.DATE_ADDED
         };
         //String selection = MediaStore.Images.Media.DURATION + " >= ?";
         String selection = null;
         String[] selectionArgs = new String[] {
             //String.valueOf(TimeUnit.MILLISECONDS.convert(5, TimeUnit.MINUTES))
         };
-        String sortOrder = MediaStore.Images.Media.DATE_TAKEN + " ASC";
+        String sortOrder = MediaStore.Images.Media.DATE_ADDED + " ASC";
 
         long startTime = SystemClock.elapsedRealtime();
         try (Cursor cursor = context.getContentResolver().query(
@@ -110,16 +115,16 @@ public class AlarmReceiver extends BroadcastReceiver {
             int nameColumn =
                     cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME);
             int sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.SIZE);
-            int dateTakenColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_TAKEN);
+            int dateTakenColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_ADDED);
 
             Log.w("MyImageBegin", "Before while");
             while (cursor.moveToNext()) {
-                Log.w("MyImageBegin", "In while");
+//                Log.w("MyImageBegin", "In while");
                 // Get values of columns for a given video.
                 long id = cursor.getLong(idColumn);
                 String name = cursor.getString(nameColumn);
                 int size = cursor.getInt(sizeColumn);
-                int dateTaken = cursor.getInt(dateTakenColumn);
+                int dateTaken = Math.abs(cursor.getInt(dateTakenColumn));
 
                 Uri contentUri = ContentUris.withAppendedId(
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
@@ -127,7 +132,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 // Stores column values and the contentUri in a local object
                 // that represents the media file.
                 imageList.add(new MyImage(contentUri, name, size, dateTaken, ""));
-                Log.w("MyImage Stuff", contentUri.toString() + " " + name + " " + size + " " + dateTaken);
+//                Log.w("MyImage Stuff", contentUri.toString() + " " + name + " " + size + " " + dateTaken);
             }
         }
         catch (Exception e) {
@@ -144,9 +149,11 @@ public class AlarmReceiver extends BroadcastReceiver {
         for (MyImage mi : images) {
             Log.w("Stuff", "Analyzing new image: " + mi.name + " at " + mi.uriString);
             String result = MachineLearningManager.AnalyzeImage(context, Uri.parse(mi.uriString));
-            sendNotification(context, result, Uri.parse(mi.uriString));
-            mi.objectDetected = result;
-            LessonListActivity.addMyImage(context, mi);
+            if (FirebaseManager.firestoreObjectNameExists(result)) {
+                sendNotification(context, result, Uri.parse(mi.uriString));
+                mi.objectDetected = result;
+                LessonListActivity.addMyImage(context, mi);
+            }
         }
     }
 
@@ -157,12 +164,14 @@ public class AlarmReceiver extends BroadcastReceiver {
         Toast.makeText(context, "Checking for new photos...", Toast.LENGTH_SHORT).show();
 
         List<MyImage> updatedImages = getAllImages(context);
-        List<MyImage> newlyTaken = new ArrayList<MyImage>();
+        List<MyImage> newlyTaken = new ArrayList<>();
 
         SharedPreferences sharedPreferences = HelperCode.getSharedPrefsObj(context);
         latestDate = sharedPreferences.getInt(GlobalVars.LATEST_DATE_PREF_KEY, 0);
 
         int newLatestDate = latestDate;
+
+        Log.w("Stuff", "Latest date: " + latestDate);
 
         // TODO: Optimize this by checking from latest to earliest, then stopping when appropriate (they are already sorted by date_taken in getAllImages(), though idk which direction)
         for (MyImage mi : updatedImages) {
@@ -176,5 +185,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         latestDate = newLatestDate;
         sharedPreferences.edit().putInt(GlobalVars.LATEST_DATE_PREF_KEY, latestDate).apply();
         analyzeImages(context, newlyTaken);
+
+        FirebaseManager.updateFirestoreObjectLessons();
     }
 }
