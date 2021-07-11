@@ -69,7 +69,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:backgroundTint="@color/deep_blue"
-                android:text="Change avatar" />
+                android:text="Change avatar"
+                android:visibility="gone"/>
 
             <Button
                 android:id="@+id/stopAnalyzing"
@@ -77,7 +78,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:backgroundTint="@color/deep_blue"
-                android:text="Stop Refreshing in Background" />
+                android:text="Stop Refreshing in Background"
+                android:visibility="gone"/>
 
         </com.google.android.material.appbar.AppBarLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -23,6 +23,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.util.HashMap;
+import java.util.Random;
 import java.util.UUID;
 
 
@@ -164,5 +165,14 @@ public class FirebaseManager {
             Log.w("Firebase stuff", "Hashmap null, internet probably bad");
             return null;
         }
+    }
+
+    public static ObjectLesson chooseRandomLesson() {
+        Random generator = new Random();
+        Object[] keys = objectLessons.keySet().toArray();
+        int index = generator.nextInt(keys.length);
+        ObjectLesson ol = new ObjectLesson((HashMap<String, String>) objectLessons.get(keys[index]));
+        ol.setObjectID((String) keys[index]);
+        return ol;
     }
 }

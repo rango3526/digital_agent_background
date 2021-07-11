@@ -142,9 +142,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             askForExternalStoragePermission();
         }
 
+        FirebaseManager.updateFirestoreObjectLessons();
+
         // Begin searching for photos
         HelperCode.initializeAlarmManager(context);
-        HelperCode.setTestAlarm(context);
+        HelperCode.setSyntheticAlarm(context);
     }
 
     @Override

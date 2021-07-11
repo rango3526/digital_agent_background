@@ -12,7 +12,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.SystemClock;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import java.io.FileNotFoundException;
@@ -23,11 +22,11 @@ import java.util.ArrayList;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import org.checkerframework.checker.units.qual.A;
-
 public class HelperCode {
     public static PendingIntent alarmPendingIntent;
     public static AlarmManager alarmManager;
+
+    public static double syntheticAlarmIntervalHours = 5.0;
 
     public static Bitmap GetBitmapFromUri(Context context, Uri imageUri) {
         Bitmap bitmap = null;
@@ -99,18 +98,18 @@ public class HelperCode {
         alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
     }
 
-    public static void setTestAlarm(Context context) {
-        AlarmReceiver.alarmTriggered(context);
-        alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 5000, 5000, alarmPendingIntent);
-        Toast.makeText(context,"I'll analyze your photos periodically in the background", Toast.LENGTH_SHORT).show();
-
-        ComponentName receiver = new ComponentName(context, AlarmBootReceiver.class);
-        PackageManager pm = context.getPackageManager();
-
-        pm.setComponentEnabledSetting(receiver,
-                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-                PackageManager.DONT_KILL_APP);
-    }
+//    public static void setTestAlarm(Context context) {
+//        AlarmReceiver.alarmTriggered(context);
+//        alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 5000, 5000, alarmPendingIntent);
+//        Toast.makeText(context,"I'll analyze your photos periodically in the background", Toast.LENGTH_SHORT).show();
+//
+//        ComponentName receiver = new ComponentName(context, AlarmBootReceiver.class);
+//        PackageManager pm = context.getPackageManager();
+//
+//        pm.setComponentEnabledSetting(receiver,
+//                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+//                PackageManager.DONT_KILL_APP);
+//    }
 
     public static void cancelAlarm(Context context) {
         if (alarmPendingIntent != null) {
@@ -125,5 +124,20 @@ public class HelperCode {
 
             Toast.makeText(context,"Background refresh stopped", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public static void setSyntheticAlarm(Context context) {
+//        AlarmReceiver.syntheticAlarmTriggered(context);
+        int alarmIntervalMs = (int) Math.round(syntheticAlarmIntervalHours*60*60*1000);
+//        int alarmIntervalMs = 1000;
+        alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + alarmIntervalMs, alarmIntervalMs, alarmPendingIntent);
+        Toast.makeText(context,"I'll analyze your photos periodically in the background", Toast.LENGTH_SHORT).show();
+
+        ComponentName receiver = new ComponentName(context, AlarmBootReceiver.class);
+        PackageManager pm = context.getPackageManager();
+
+        pm.setComponentEnabledSetting(receiver,
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                PackageManager.DONT_KILL_APP);
     }
 }

@@ -16,6 +16,8 @@ public class ObjectLesson {
     private String lessonTopic;
     private String videoLink;
 
+//    public String exampleImageUrl;
+
     private HashMap<String, String> hashmapRepresentation;
 
     public enum hashmapKeys {objectID, objectDisplayName, definition, lessonTopic, videoLink};
@@ -80,14 +82,14 @@ public class ObjectLesson {
 
     }
 
-    public ObjectLesson(String objectID, String objectDisplayName, String objectDefinition, String lessonTopic, String videoLink) {
-        this.objectID = objectID;
-        this.objectDisplayName = objectDisplayName;
-        this.objectDefinition = objectDefinition;
-        this.lessonTopic = lessonTopic;
-        this.videoLink = videoLink;
-        updateHashmapRepresentation();
-    }
+//    public ObjectLesson(String objectID, String objectDisplayName, String objectDefinition, String lessonTopic, String videoLink) {
+//        this.objectID = objectID;
+//        this.objectDisplayName = objectDisplayName;
+//        this.objectDefinition = objectDefinition;
+//        this.lessonTopic = lessonTopic;
+//        this.videoLink = videoLink;
+//        updateHashmapRepresentation();
+//    }
 
     public ObjectLesson(HashMap<String,String> hashmap) {
         try {
@@ -96,6 +98,12 @@ public class ObjectLesson {
             this.objectDefinition = hashmap.get(hashmapKeys.definition.name());
             this.lessonTopic = hashmap.get(hashmapKeys.lessonTopic.name());
             this.videoLink = hashmap.get(hashmapKeys.videoLink.name());
+//            try {
+//                this.exampleImageUrl = hashmap.get("exampleImageUrl");
+//            }
+//            catch (Exception e) {
+//
+//            }
             updateHashmapRepresentation();
         }
         catch (Exception e) {
@@ -110,6 +118,7 @@ public class ObjectLesson {
         updatedHM.put(hashmapKeys.objectID.name(), this.objectID);
         updatedHM.put(hashmapKeys.objectDisplayName.name(), this.objectDisplayName);
         updatedHM.put(hashmapKeys.videoLink.name(), this.videoLink);
+//        updatedHM.put("exampleImageUrl", this.exampleImageUrl);
         this.hashmapRepresentation = updatedHM;
     }
 }

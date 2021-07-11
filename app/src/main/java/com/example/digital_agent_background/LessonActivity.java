@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.example.digital_agent_background.databinding.ActivityLessonBinding;
 import com.example.digital_agent_background.databinding.ActivityMainBinding;
+import com.squareup.picasso.Picasso;
 
 public class LessonActivity extends AppCompatActivity {
 
@@ -35,8 +36,9 @@ public class LessonActivity extends AppCompatActivity {
         MyImage mi = LessonListActivity.getMyImageByID(context, myImageID);
 
         TextView textView = binding.avatarBeginLessonDialogue;
-        ImageView image = binding.objectImage;
-        image.setImageURI(imageUri);
+//        ImageView image = binding.objectImage;
+//        if (!imageUri.equals(Uri.parse("")) && imageUri != null) // aka if there's an actual URI in there
+//            Picasso.get().load(imageUri).into(image);
         textView.setText("Let's learn about that " + objectFound + "!");
         Log.w("Stuff", "STARTED LESSON LEARN ACTIVITY");
         binding.bookmarkToggle.setChecked(mi.bookmarked);

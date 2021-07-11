@@ -21,8 +21,10 @@ import android.widget.Toast;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import java.time.Clock;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class AlarmReceiver extends BroadcastReceiver {
@@ -33,7 +35,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         try {
-            alarmTriggered(context);
+            syntheticAlarmTriggered(context);
         }
         catch (Exception e) {
             Log.w("Stuff", "Found exception: " + e.getMessage());
@@ -157,35 +159,75 @@ public class AlarmReceiver extends BroadcastReceiver {
         }
     }
 
-    public static void alarmTriggered(Context context) {
-        int latestDate = 0;
+//    public static void alarmTriggered(Context context) {
+//        int latestDate = 0;
+//
+//        createNotificationChannel(context);
+//        //Toast.makeText(context, "Checking for new photos...", Toast.LENGTH_SHORT).show();
+//
+//        List<MyImage> updatedImages = getAllImages(context);
+//        List<MyImage> newlyTaken = new ArrayList<>();
+//
+//        SharedPreferences sharedPreferences = HelperCode.getSharedPrefsObj(context);
+//        latestDate = sharedPreferences.getInt(GlobalVars.LATEST_DATE_PREF_KEY, 0);
+//
+//        int newLatestDate = latestDate;
+//
+//        Log.w("Stuff", "Latest date: " + latestDate);
+//
+//        // TODO: Optimize this by checking from latest to earliest, then stopping when appropriate (they are already sorted by date_taken in getAllImages(), though idk which direction)
+//        for (MyImage mi : updatedImages) {
+//            if (mi.dateTaken > latestDate) {
+//                newLatestDate = mi.dateTaken;
+//                newlyTaken.add(mi);
+//                //Log.w("Stuff", "Added new image taken at " + mi.dateTaken + " and latest was at: " + latestDate);
+//            }
+//        }
+//
+//        latestDate = newLatestDate;
+//        sharedPreferences.edit().putInt(GlobalVars.LATEST_DATE_PREF_KEY, latestDate).apply();
+//        analyzeImages(context, newlyTaken);
+//
+//        FirebaseManager.updateFirestoreObjectLessons();
+//    }
 
+    public static void syntheticAlarmTriggered(Context context) {
+
+        ObjectLesson ol = FirebaseManager.chooseRandomLesson();
+        String imageUrl = "";
+//        if (ol.exampleImageUrl != "" && ol.exampleImageUrl != null) {
+//            imageUrl = ol.exampleImageUrl;
+//        }
+        MyImage mi = new MyImage(Uri.parse(imageUrl), "name is irrelevant", -1, -1, ol.getObjectID(), (new Random(SystemClock.elapsedRealtime())).nextLong());
+        LessonListActivity.addMyImage(context, mi);
         createNotificationChannel(context);
-        //Toast.makeText(context, "Checking for new photos...", Toast.LENGTH_SHORT).show();
-
-        List<MyImage> updatedImages = getAllImages(context);
-        List<MyImage> newlyTaken = new ArrayList<>();
-
-        SharedPreferences sharedPreferences = HelperCode.getSharedPrefsObj(context);
-        latestDate = sharedPreferences.getInt(GlobalVars.LATEST_DATE_PREF_KEY, 0);
-
-        int newLatestDate = latestDate;
-
-        Log.w("Stuff", "Latest date: " + latestDate);
-
-        // TODO: Optimize this by checking from latest to earliest, then stopping when appropriate (they are already sorted by date_taken in getAllImages(), though idk which direction)
-        for (MyImage mi : updatedImages) {
-            if (mi.dateTaken > latestDate) {
-                newLatestDate = mi.dateTaken;
-                newlyTaken.add(mi);
-                //Log.w("Stuff", "Added new image taken at " + mi.dateTaken + " and latest was at: " + latestDate);
-            }
-        }
-
-        latestDate = newLatestDate;
-        sharedPreferences.edit().putInt(GlobalVars.LATEST_DATE_PREF_KEY, latestDate).apply();
-        analyzeImages(context, newlyTaken);
+        sendNotification(context, mi);
 
         FirebaseManager.updateFirestoreObjectLessons();
+
+
+
+
+//        createNotificationChannel(context);
+//        //Toast.makeText(context, "Checking for new photos...", Toast.LENGTH_SHORT).show();
+//
+//        int newLatestDate = latestDate;
+//
+//        Log.w("Stuff", "Latest date: " + latestDate);
+//
+//        // TODO: Optimize this by checking from latest to earliest, then stopping when appropriate (they are already sorted by date_taken in getAllImages(), though idk which direction)
+//        for (MyImage mi : updatedImages) {
+//            if (mi.dateTaken > latestDate) {
+//                newLatestDate = mi.dateTaken;
+//                newlyTaken.add(mi);
+//                //Log.w("Stuff", "Added new image taken at " + mi.dateTaken + " and latest was at: " + latestDate);
+//            }
+//        }
+//
+//        latestDate = newLatestDate;
+//        sharedPreferences.edit().putInt(GlobalVars.LATEST_DATE_PREF_KEY, latestDate).apply();
+//        analyzeImages(context, newlyTaken);
+//
+//        FirebaseManager.updateFirestoreObjectLessons();
     }
 }
